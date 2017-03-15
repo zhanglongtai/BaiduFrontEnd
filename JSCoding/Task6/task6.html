@@ -9,7 +9,10 @@
       <div style="display: flex; margin: 10px;">
         <textarea id="inputText" rows="5" cols="20"></textarea>
         <div>
-          <button type="button" id="submit">提交</button>
+          <button type="button" id="left-in">左侧入</button>
+          <button type="button" id="right-in">右侧入</button>
+          <button type="button" id="left-out">左侧出</button>
+          <button type="button" id="right-out">右侧出</button>
         </div>
       </div>
       <div id="content" style="display: flex; margin: 10px;">
@@ -25,26 +28,69 @@
   <script type="text/javascript">
   let data = [];
 
+  function render(newData) {
+    const textContent = document.getElementById('content');
+      textContent.innerHTML = '';
+      newData.forEach((item) => {    
+        const textItem = document.createElement('div');
+        textItem.innerHTML = `<div style='min-width: 20px; margin: 5px; background-color: green; text-align: center;'>${item}</div>`;
+        textContent.appendChild(textItem);
+      });
+  }
+
   (function () {
-    // 为提交按钮绑定监听函数
-    document.getElementById('submit').addEventListener('click', () => {
+    // 左侧入
+    document.getElementById('left-in').addEventListener('click', () => {
+      // 解析提交的文本
+      const value = document.getElementById('inputText').value;
+      if (value !== undefined && value !== null && value !== '') {
+        // 利用正则表达式分割用户输入的字符
+        data = value.split(/[\s\uff0c\u3001\u002c]+/).concat(data);
+
+        // 展示提交的文本
+        render(data);
+
+        document.getElementById('inputText').value = '';
+      }
+    });
+
+    // 右侧入
+    document.getElementById('left-in').addEventListener('click', () => {
       // 解析提交的文本
       const value = document.getElementById('inputText').value;
       if (value !== undefined && value !== null && value !== '') {
         // 利用正则表达式分割用户输入的字符
         data = data.concat(value.split(/[\s\uff0c\u3001\u002c]+/));
+
+        // 展示提交的文本
+        render(data);
+
+        document.getElementById('inputText').value = '';
       }
+    });
 
-      // 展示提交的文本
-      const textContent = document.getElementById('content');
-      textContent.innerHTML = '';
-      data.forEach((item) => {    
-        const textItem = document.createElement('div');
-        textItem.innerHTML = `<div style='min-width: 20px; margin: 5px; background-color: green; text-align: center;'>${item}</div>`;
-        textContent.appendChild(textItem);
-      });
+    // 左侧出
+    document.getElementById('left-out').addEventListener('click', () => {
+      const value = data[0];
 
-      document.getElementById('inputText').value = '';
+      data.shift();
+      render(data);
+
+      if(value !== undefined && value !== '') {
+        alert(value);
+      }
+    });
+
+    // 右侧出
+    document.getElementById('right-out').addEventListener('click', () => {
+      const value = data[data.length - 1];
+
+      data = data.slice(0, data.length - 1);
+      render(data);
+
+      if(value !== undefined && value !== '') {
+        alert(value);
+      }
     });
 
     // 为查询按钮绑定监听函数
