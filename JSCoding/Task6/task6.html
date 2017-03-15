@@ -4,77 +4,76 @@
     <meta charset="utf-8">
     <title>IFE JavaScript Task 06</title>
   </head>
-<body>
-  <div id="container">
-    <div style="display: flex; margin: 10px;">
-      <textarea id="inputText" rows="5" cols="20"></textarea>
-      <div>
-        <button type="button" id="submit">提交</button>
+  <body>
+    <div id="container">
+      <div style="display: flex; margin: 10px;">
+        <textarea id="inputText" rows="5" cols="20"></textarea>
+        <div>
+          <button type="button" id="submit">提交</button>
+        </div>
+      </div>
+      <div id="content" style="display: flex; margin: 10px;">
+      </div>
+      <div style="display: flex; margin: 10px;">
+        <input type="text" id="searchText">
+        <div>
+          <button type="button" id="search">查询</button>
+        </div>
       </div>
     </div>
-    <div id="content" style="display: flex; margin: 10px;">
-    </div>
-    <div style="display: flex; margin: 10px;">
-      <input type="text" id="searchText">
-      <div>
-        <button type="button" id="search">查询</button>
-      </div>
-    </div>
-  </div>
 
-<script type="text/javascript">
-let data = [];
+  <script type="text/javascript">
+  let data = [];
 
-(function () {
-  // 为提交按钮绑定监听函数
-  document.getElementById('submit').addEventListener('click', () => {
-    // 解析提交的文本
-    const value = document.getElementById('inputText').value;
-    if (value !== undefined && value !== null && value !== '') {
-      console.log(value)
-      console.log(value.split(/[\s\uff0c\u3001\u002c]+/))
-      data = data.concat(value.split(/[\s\uff0c\u3001\u002c]+/));
-    }
+  (function () {
+    // 为提交按钮绑定监听函数
+    document.getElementById('submit').addEventListener('click', () => {
+      // 解析提交的文本
+      const value = document.getElementById('inputText').value;
+      if (value !== undefined && value !== null && value !== '') {
+        // 利用正则表达式分割用户输入的字符
+        data = data.concat(value.split(/[\s\uff0c\u3001\u002c]+/));
+      }
 
-    // 展示提交的文本
-    const textContent = document.getElementById('content');
-    textContent.innerHTML = '';
-    data.forEach((item) => {    
-      const textItem = document.createElement('div');
-      textItem.innerHTML = `<div style='min-width: 20px; margin: 5px; background-color: green; text-align: center;'>${item}</div>`;
-      textContent.appendChild(textItem);
+      // 展示提交的文本
+      const textContent = document.getElementById('content');
+      textContent.innerHTML = '';
+      data.forEach((item) => {    
+        const textItem = document.createElement('div');
+        textItem.innerHTML = `<div style='min-width: 20px; margin: 5px; background-color: green; text-align: center;'>${item}</div>`;
+        textContent.appendChild(textItem);
+      });
+
+      document.getElementById('inputText').value = '';
     });
 
-    document.getElementById('inputText').value = '';
-  });
+    // 为查询按钮绑定监听函数
+    document.getElementById('search').addEventListener('click', () => {
+      // 首先恢复初始状态
+      const textContent = document.getElementById('content');
+      textContent.innerHTML = '';
+      data.forEach((item) => {    
+        const textItem = document.createElement('div');
+        textItem.innerHTML = `<div style='min-width: 20px; margin: 5px; background-color: green; text-align: center;'>${item}</div>`;
+        textContent.appendChild(textItem);
+      });
 
-  // 为查询按钮绑定监听函数
-  document.getElementById('search').addEventListener('click', () => {
-    // 首先恢复初始状态
-    const textContent = document.getElementById('content');
-    textContent.innerHTML = '';
-    data.forEach((item) => {    
-      const textItem = document.createElement('div');
-      textItem.innerHTML = `<div style='min-width: 20px; margin: 5px; background-color: green; text-align: center;'>${item}</div>`;
-      textContent.appendChild(textItem);
-    });
-
-    // 寻找匹配字符改变颜色
-    const value = document.getElementById('searchText').value;
-    if (value !== undefined && value !== null && value !== '') {
-      // 匹配输入的文本
-      for (let i = 0; i < data.length; i++) {
-        // 匹配成功
-        if (data[i].indexOf(value) !== -1) {
-          textContent.childNodes[i].innerHTML = `<div style='min-width: 20px; margin: 5px; background-color: red; text-align: center;'>${data[i]}</div>`;
+      // 寻找匹配字符改变颜色
+      const value = document.getElementById('searchText').value;
+      if (value !== undefined && value !== null && value !== '') {
+        // 匹配输入的文本
+        for (let i = 0; i < data.length; i++) {
+          // 匹配成功
+          if (data[i].indexOf(value) !== -1) {
+            textContent.childNodes[i].innerHTML = `<div style='min-width: 20px; margin: 5px; background-color: red; text-align: center;'>${data[i]}</div>`;
+          }
         }
       }
-    }
 
-    document.getElementById('searchText').value = '';
-  });
-}());
+      document.getElementById('searchText').value = '';
+    });
+  }());
+  </script>
 
-</script>
-</body>
+  </body>
 </html>
