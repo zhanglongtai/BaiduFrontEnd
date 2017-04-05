@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>IFE JavaScript Task 07</title>
+        <style type="text/css">
+            .tree {
+                display: flex;
+            }
+
+            .node {
+                display: flex;
+                margin: 10px;
+                border-style:solid;
+                min-height: 20px;
+                min-width: 40px;
+                background-color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="tree">
+            <div class="node" id="1">
+                <div class="node" id="2">
+                    <div class="node" id="4">
+                        <div class="node" id="8"></div>
+                        <div class="node" id="9"></div>
+                    </div>
+                    <div class="node" id="5">
+                        <div class="node" id="10"></div>
+                        <div class="node" id="11"></div>
+                    </div>
+                </div>
+                <div class="node" id="3">
+                    <div class="node" id="6">
+                        <div class="node" id="12"></div>
+                        <div class="node" id="13"></div>
+                    </div>
+                    <div class="node" id="7">
+                        <div class="node" id="14"></div>
+                        <div class="node" id="15"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="display: flex;">
+            <button id="DLR">前序遍历</button>
+            <button id="LDR">中序遍历</button>
+            <button id="LRD">后序遍历</button>
+        </div>
+
+  
+        <script type="text/javascript">
+            class Queue {
+                constructor() {
+                    this._queue = [];
+                }
+
+                enqueue(data) {
+                    this._queue.push(data);
+                }
+
+                dequeue() {
+                    return this._queue.shift();
+                }
+            }
+
+            class Node {
+                constructor(data) {
+                    this.data = data;
+                    this.parent = null;
+                    this.childrenLeft = null;
+                    this.childrenRight = null;
+                }
+            }
+
+            class Tree {
+                constructor(data) {
+                    this._root = new Node(data);
+                }
+                
+                // 前序遍历
+                traveseDLR(callback) {
+                    function* recurse(currentNode) {
+                        if (currentNode !== null) {
+                            yield callback(currentNode);
+                            console.log(currentNode.data);
+                            yield* recurse(currentNode.childrenLeft);
+                            yield* recurse(currentNode.childrenRight);
+                        }
+                    }
+
+                    return recurse(this._root);
+                }
+
+                // 中序遍历
+                traveseLDR(callback) {
+                    function* recurse(currentNode) {
+                        if (currentNode !== null) {
+                            yield* recurse(currentNode.childrenLeft);
+                            yield callback(currentNode);
+                            console.log(currentNode.data);
+                            yield* recurse(currentNode.childrenRight);
+                        }
+                    }
+
+                    return recurse(this._root);
+                }
+
+                // 后序遍历
+                traveseLRD(callback) {
+                    function* recurse(currentNode) {
+                        if (currentNode !== null) {
+                            yield* recurse(currentNode.childrenLeft);
+                            yield* recurse(currentNode.childrenRight);
+                            yield callback(currentNode);
+                            console.log(currentNode.data);
+                        }
+                    }
+
+                    return recurse(this._root);
+                }
+
+                add(data) {
+                    const newNode = new Node(data);
+
+                    const queue = new Queue();
+
+                    let currentNode = this._root;
+
+                    while(currentNode) {
+                        if (currentNode.childrenLeft === null) {
+                            currentNode.childrenLeft = newNode;
+                            newNode.parent = currentNode;
+                            break;
+                        } else if (currentNode.childrenRight === null) {
+                            currentNode.childrenRight = newNode;
+                            newNode.parent = currentNode;
+                            break;
+                        } else {
+                            queue.enqueue(currentNode.childrenLeft);
+                            queue.enqueue(currentNode.childrenRight);
+
+                            currentNode = queue.dequeue();
+                        }
+                    }
+                }
+            }
+            
+            // build a tree
+            const tree = new Tree(1);
+            for (let i = 2; i <= 15; i++) {
+                tree.add(i);
+            }
+            
+            let travesing = false;
+
+            document.getElementById('DLR').addEventListener('click', () => {
+                if (!travesing) {
+                    travesing = true;
+
+                    const showDLT = tree.traveseDLR((currentNode) => {
+                        const nodes = document.querySelectorAll(".node");
+                        for (let i = 0; i < nodes.length; i++) {
+                            nodes[i].style.backgroundColor = "white";
+                        }
+                        document.getElementById(`${currentNode.data}`).style.backgroundColor = "red";
+                    });
+
+                    let flag = true;
+                    (function render() {
+                        if (flag) {
+                            flag = showDLT.next().done ? false : true;
+                            setTimeout(render, 1000);
+                        } else {
+                            travesing = false;
+                            const nodes = document.querySelectorAll(".node");
+                            for (let i = 0; i < nodes.length; i++) {
+                                nodes[i].style.backgroundColor = "white";
+                            }
+                        }
+                    })();
+                }
+            });
+
+            document.getElementById('LDR').addEventListener('click', () => {
+                if (!travesing) {
+                    travesing = true;
+
+                    const showLDR = tree.traveseLDR((currentNode) => {
+                        const nodes = document.querySelectorAll(".node");
+                        for (let i = 0; i < nodes.length; i++) {
+                            nodes[i].style.backgroundColor = "white";
+                        }
+                        document.getElementById(`${currentNode.data}`).style.backgroundColor = "red";
+                    });
+
+                    let flag = true;
+                    (function render() {
+                        if (flag) {
+                            flag = showLDR.next().done ? false : true;
+                            setTimeout(render, 1000);
+                        } else {
+                            travesing = false;
+                            const nodes = document.querySelectorAll(".node");
+                            for (let i = 0; i < nodes.length; i++) {
+                                nodes[i].style.backgroundColor = "white";
+                            }
+                        }
+                    })();
+                }
+            });
+
+            document.getElementById('LRD').addEventListener('click', () => {
+                if (!travesing) {
+                    travesing = true;
+
+                    const showLRD = tree.traveseLRD((currentNode) => {
+                        const nodes = document.querySelectorAll(".node");
+                        for (let i = 0; i < nodes.length; i++) {
+                            nodes[i].style.backgroundColor = "white";
+                        }
+                        document.getElementById(`${currentNode.data}`).style.backgroundColor = "red";
+                    });
+
+                    let flag = true;
+                    (function render() {
+                        if (flag) {
+                            flag = showLRD.next().done ? false : true;
+                            setTimeout(render, 1000);
+                        } else {
+                            travesing = false;
+                            const nodes = document.querySelectorAll(".node");
+                            for (let i = 0; i < nodes.length; i++) {
+                                nodes[i].style.backgroundColor = "white";
+                            }
+                        }
+                    })();
+                }
+            });
+        </script>
+    </body>
+</html>
