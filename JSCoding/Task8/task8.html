@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>IFE JavaScript Task 07</title>
+        <style type="text/css">
+            .tree {
+                display: flex;
+            }
+
+            .node {
+                display: flex;
+                margin: 10px;
+                border-style:solid;
+                min-height: 20px;
+                min-width: 40px;
+                background-color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="tree">
+            <div class="node" id="1">
+                <div class="content" id="1">A</div>
+                <div class="node" id="2">
+                    <div class="content" id="2">B</div>
+                    <div class="node" id="5">
+                        <div class="content" id="5">E</div>
+                        <div class="node" id="10">
+                            <div class="content" id="10">J</div>
+                        </div>
+                        <div class="node" id="11">
+                            <div class="content" id="11">K</div>
+                        </div>
+                        <div class="node" id="12">
+                            <div class="content" id="12">L</div>
+                        </div>
+                        <div class="node" id="13">
+                            <div class="content" id="13">M</div>
+                        </div>
+                    </div>
+                    <div class="node" id="6">
+                        <div class="content" id="6">F</div>
+                    </div>
+                    <div class="node" id="7">
+                        <div class="content" id="7">G</div>
+                        <div class="node" id="14">
+                            <div class="content" id="14">N</div>
+                        </div>
+                        <div class="node" id="15">
+                            <div class="content" id="15">O</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="node" id="3">
+                    <div class="content" id="3">C</div>
+                    <div class="node" id="8">
+                        <div class="content" id="8">H</div>
+                        <div class="node" id="16">
+                            <div class="content" id="16">P</div>
+                        </div>
+                        <div class="node" id="17">
+                            <div class="content" id="17">Q</div>
+                        </div>
+                        <div class="node" id="18">
+                            <div class="content" id="18">R</div>
+                        </div>
+                    </div>
+                    <div class="node" id="9">
+                        <div class="content" id="9">I</div>
+                        <div class="node" id="19">
+                            <div class="content" id="19">S</div>
+                            <div class="node" id="21">
+                                <div class="content" id="21">U</div>
+                            </div>
+                        </div>
+                        <div class="node" id="20">
+                            <div class="content" id="20">T</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="node" id="4">
+                    <div class="content" id="4">D</div>
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; margin: 10px;">
+            <button id="traverseDF">深度优先遍历</button>
+            <button id="traverseBF">广度优先遍历</button>
+        </div>
+        <div style="display: flex; margin: 10px;">
+            <input type="text" id="searchText">
+            <div>
+              <button type="button" id="searchDF">深度优先查询</button>
+            </div>
+            <div>
+              <button type="button" id="searchBF">广度优先查询</button>
+            </div>
+        </div>
+
+  
+        <script type="text/javascript">
+            class Queue {
+                constructor() {
+                    this._queue = [];
+                }
+
+                enqueue(data) {
+                    this._queue.push(data);
+                }
+
+                dequeue() {
+                    return this._queue.shift();
+                }
+
+                getQueue() {
+                    return this._queue.slice();
+                }
+            }
+
+            class Node {
+                constructor(data) {
+                    this.data = data;
+                    this.parent = null;
+                    this.children = [];
+                }
+            }
+
+            class Tree {
+                constructor(data) {
+                    this._root = new Node(data);
+
+                    this.traverseDF = this.traverseDF.bind(this);
+                    this.traverseDFGenerator = this.traverseDFGenerator.bind(this);
+                    this.traverseBF = this.traverseBF.bind(this);
+                    this.traverseBFGenerator = this.traverseBFGenerator.bind(this);
+                }
+
+                // 深度优先
+                traverseDFGenerator(callback) {
+                    function* recurse(currentNode) {
+                        for (let i = 0; i < currentNode.children.length; i++) {
+                            yield* recurse(currentNode.children[i]);
+                        }
+                        yield callback(currentNode);
+                    }
+
+                    return recurse(this._root);
+                }
+
+                traverseDF(callback) {
+                    function recurse(currentNode) {
+                        for (let i = 0; i < currentNode.children.length; i++) {
+                            recurse(currentNode.children[i]);
+                        }
+                        callback(currentNode);
+                    }
+
+                    return recurse(this._root);
+                }
+
+                traverseBFGenerator(callback) {
+                    const queue = new Queue();
+
+                    function* travese(node) {
+                        let currentNode = node;
+
+                        while(currentNode) {
+                            for (let i = 0; i < currentNode.children.length; i++) {
+                                queue.enqueue(currentNode.children[i]);
+                            }
+
+                            yield callback(currentNode);
+                            currentNode = queue.dequeue();
+                        }
+                    }
+ 
+                    return travese(this._root);
+                }
+
+                traverseBF(callback) {
+                    const queue = new Queue();
+
+                    function travese(node) {
+                        let currentNode = node;
+
+                        while(currentNode) {
+                            for (let i = 0; i < currentNode.children.length; i++) {
+                                queue.enqueue(currentNode.children[i]);
+                            }
+
+                            callback(currentNode);
+                            currentNode = queue.dequeue();
+                        }
+                    }
+ 
+                    return travese(this._root);
+                }
+
+                contains(callback, traversal) {
+                    traversal(callback);
+                }
+
+                add(data, parentData, traversal) {
+                    const newNode = new Node(data);
+                    
+                    let parent = null;
+
+                    this.contains((node) => {
+                        if (node.data === parentData) {
+                            parent = node;
+                        }
+                    }, traversal);
+
+                    if (parent) {
+                        parent.children.push(newNode);
+                        newNode.parent = parent;
+                    } else {
+                        throw new Error('Cannot add node to a non-existent parent.');
+                    }
+                }
+            }
+            
+            // build a tree
+            const tree = new Tree(1);
+            // layer 1
+            tree.add(2, 1, tree.traverseDF);
+            tree.add(3, 1, tree.traverseDF);
+            tree.add(4, 1, tree.traverseDF);
+            // layer 2
+            tree.add(5, 2, tree.traverseDF);
+            tree.add(6, 2, tree.traverseDF);
+            tree.add(7, 2, tree.traverseDF);
+            tree.add(8, 3, tree.traverseDF);
+            tree.add(9, 3, tree.traverseDF);
+            // layer 3
+            tree.add(10, 5, tree.traverseDF);
+            tree.add(11, 5, tree.traverseDF);
+            tree.add(12, 5, tree.traverseDF);
+            tree.add(13, 5, tree.traverseDF);
+            tree.add(14, 7, tree.traverseDF);
+            tree.add(15, 7, tree.traverseDF);
+            tree.add(16, 8, tree.traverseDF);
+            tree.add(17, 8, tree.traverseDF);
+            tree.add(18, 8, tree.traverseDF);
+            tree.add(19, 9, tree.traverseDF);
+            tree.add(20, 9, tree.traverseDF);
+            // layer 4
+            tree.add(21, 19, tree.traverseDF);
+
+            let traversing = false;
+
+            document.getElementById('traverseDF').addEventListener('click', () => {
+                if (!traversing) {
+                    traversing = true;
+
+                    const showDF = tree.traverseDFGenerator((currentNode) => {
+                        const nodes = document.querySelectorAll(".node");
+                        for (let i = 0; i < nodes.length; i++) {
+                            nodes[i].style.backgroundColor = "white";
+                        }
+                        document.getElementById(`${currentNode.data}`).style.backgroundColor = "red";
+                    });
+
+                    let flag = true;
+                    (function render() {
+                        if (flag) {
+                            flag = showDF.next().done ? false : true;
+                            setTimeout(render, 1000);
+                        } else {
+                            traversing = false;
+                            const nodes = document.querySelectorAll(".node");
+                            for (let i = 0; i < nodes.length; i++) {
+                                nodes[i].style.backgroundColor = "white";
+                            }
+                        }
+                    })();
+                }
+            });
+
+            document.getElementById('traverseBF').addEventListener('click', () => {
+                if (!traversing) {
+                    traversing = true;
+
+                    const showBF = tree.traverseBFGenerator((currentNode) => {
+                        const nodes = document.querySelectorAll(".node");
+                        for (let i = 0; i < nodes.length; i++) {
+                            nodes[i].style.backgroundColor = "white";
+                        }
+                        document.getElementById(`${currentNode.data}`).style.backgroundColor = "red";
+                    });
+
+                    let flag = true;
+                    (function render() {
+                        if (flag) {
+                            flag = showBF.next().done ? false : true;
+                            setTimeout(render, 1000);
+                        } else {
+                            traversing = false;
+                            const nodes = document.querySelectorAll(".node");
+                            for (let i = 0; i < nodes.length; i++) {
+                                nodes[i].style.backgroundColor = "white";
+                            }
+                        }
+                    })();
+                }
+            });
+
+            document.getElementById('searchDF').addEventListener('click', () => {
+                const value = document.getElementById('searchText').value;
+                if (value === '' || value === null || value === undefined) {
+                    alert('input a value');
+                } else {
+                    if (!traversing) {
+                        traversing = true;
+
+                        const showDF = tree.traverseDFGenerator((currentNode) => {
+                            const nodes = document.querySelectorAll(".node");
+                            for (let i = 0; i < nodes.length; i++) {
+                                nodes[i].style.backgroundColor = "white";
+                            }
+                            document.getElementById(`${currentNode.data}`).style.backgroundColor = "green";
+
+                            const nodeValue = document.querySelector(`[id='${currentNode.data}'] .content`).innerHTML;
+                            const value = document.getElementById('searchText').value;
+                            if (value === nodeValue) {
+                                return 'found';
+                            }
+                        });
+
+                        let flag = true;
+                        let found = 'notFound';
+                        (function render() {
+                            if (flag) {
+                                returnValue = showDF.next();
+                                flag = !returnValue.done;
+                                found = returnValue.value;
+                                if (found === 'found') {
+                                    flag = false;
+                                } else {
+                                    found = 'notFound';
+                                }
+                                setTimeout(render, 1000);
+                            } else {
+                                traversing = false;
+                                if (found === 'notFound') {
+                                    const nodes = document.querySelectorAll(".node");
+                                    for (let i = 0; i < nodes.length; i++) {
+                                        nodes[i].style.backgroundColor = "white";
+                                    }
+
+                                    alert(`${value} is not found.`);
+                                } else {
+                                    found = 'notFound';
+                                }
+                            }
+                        })();
+                    }
+                }
+            });
+
+            document.getElementById('searchBF').addEventListener('click', () => {
+                const value = document.getElementById('searchText').value;
+                if (value === '' || value === null || value === undefined) {
+                    alert('input a value');
+                } else {
+                    if (!traversing) {
+                        traversing = true;
+
+                        const showBF = tree.traverseBFGenerator((currentNode) => {
+                            const nodes = document.querySelectorAll(".node");
+                            for (let i = 0; i < nodes.length; i++) {
+                                nodes[i].style.backgroundColor = "white";
+                            }
+                            document.getElementById(`${currentNode.data}`).style.backgroundColor = "green";
+
+                            const nodeValue = document.querySelector(`[id='${currentNode.data}'] .content`).innerHTML;
+                            const value = document.getElementById('searchText').value;
+                            if (value === nodeValue) {
+                                return 'found';
+                            }
+                        });
+
+                        let flag = true;
+                        let found = 'notFound';
+                        (function render() {
+                            if (flag) {
+                                returnValue = showBF.next();
+                                flag = !returnValue.done;
+                                found = returnValue.value;
+                                if (found === 'found') {
+                                    flag = false;
+                                } else {
+                                    found = 'notFound';
+                                }
+                                setTimeout(render, 1000);
+                            } else {
+                                traversing = false;
+
+                                if (found === 'notFound') {
+                                    const nodes = document.querySelectorAll(".node");
+                                    for (let i = 0; i < nodes.length; i++) {
+                                        nodes[i].style.backgroundColor = "white";
+                                    }
+                                    
+                                    alert(`${value} is not found.`);
+                                } else {
+                                    found = 'notFound';
+                                }
+                            }
+                        })();
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>

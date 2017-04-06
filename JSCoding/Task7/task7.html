@@ -80,7 +80,7 @@
                 }
                 
                 // 前序遍历
-                traveseDLR(callback) {
+                traverseDLR(callback) {
                     function* recurse(currentNode) {
                         if (currentNode !== null) {
                             yield callback(currentNode);
@@ -94,7 +94,7 @@
                 }
 
                 // 中序遍历
-                traveseLDR(callback) {
+                traverseLDR(callback) {
                     function* recurse(currentNode) {
                         if (currentNode !== null) {
                             yield* recurse(currentNode.childrenLeft);
@@ -108,7 +108,7 @@
                 }
 
                 // 后序遍历
-                traveseLRD(callback) {
+                traverseLRD(callback) {
                     function* recurse(currentNode) {
                         if (currentNode !== null) {
                             yield* recurse(currentNode.childrenLeft);
@@ -160,7 +160,7 @@
                 if (!travesing) {
                     travesing = true;
 
-                    const showDLT = tree.traveseDLR((currentNode) => {
+                    const showDLT = tree.traverseDLR((currentNode) => {
                         const nodes = document.querySelectorAll(".node");
                         for (let i = 0; i < nodes.length; i++) {
                             nodes[i].style.backgroundColor = "white";
@@ -188,7 +188,7 @@
                 if (!travesing) {
                     travesing = true;
 
-                    const showLDR = tree.traveseLDR((currentNode) => {
+                    const showLDR = tree.traverseLDR((currentNode) => {
                         const nodes = document.querySelectorAll(".node");
                         for (let i = 0; i < nodes.length; i++) {
                             nodes[i].style.backgroundColor = "white";
@@ -216,7 +216,7 @@
                 if (!travesing) {
                     travesing = true;
 
-                    const showLRD = tree.traveseLRD((currentNode) => {
+                    const showLRD = tree.traverseLRD((currentNode) => {
                         const nodes = document.querySelectorAll(".node");
                         for (let i = 0; i < nodes.length; i++) {
                             nodes[i].style.backgroundColor = "white";
