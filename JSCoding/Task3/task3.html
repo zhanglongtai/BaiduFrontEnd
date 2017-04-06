@@ -82,6 +82,7 @@
    */
   function render(data) {
     const list = document.getElementById('resort');
+    list.innerHTML = '';
 
     data.forEach((item, index) => {    
       const li = document.createElement('li');
