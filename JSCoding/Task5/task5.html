@@ -32,7 +32,7 @@
 
     newData.forEach((item, index) => {    
       const listItem = document.createElement('div');
-      listItem.innerHTML = `<div style='width: 20px; margin: 5px; background-color: red; text-align: center;'>${item}</div>`;
+      listItem.innerHTML = `<div style='min-width: 20px; margin: 5px; background-color: red; text-align: center;'>${item}</div>`;
       listItem.addEventListener('click', () => {
           data = data.slice(0, index).concat(data.slice(index + 1));
           render(data);
@@ -46,7 +46,7 @@
 
     newData.forEach((item, index) => {    
       const chartItem = document.createElement('div');
-      chartItem.innerHTML = `<div style='width: 20px; height: ${item*2}px; margin: 5px; background-color: red; text-align: center;'>${item}</div>`;
+      chartItem.innerHTML = `<div style='min-width: 20px; height: ${item*2}px; margin: 5px; background-color: red; text-align: center;'>${item}</div>`;
       chart.appendChild(chartItem);
     });
 
