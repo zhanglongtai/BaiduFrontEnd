@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>IFE JavaScript Task 09</title>
+        <style type="text/css">
+            .tree {
+                display: flex;
+            }
+
+            .node {
+                display: flex;
+                margin: 10px;
+                border-style:solid;
+                min-height: 20px;
+                min-width: 40px;
+                background-color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- <div class="tree">
+            <div class="node" id="1">
+                <div class="content" id="1">A</div>
+                <div class="node" id="2">
+                    <div class="content" id="2">B</div>
+                    <div class="node" id="5">
+                        <div class="content" id="5">E</div>
+                        <div class="node" id="10">
+                            <div class="content" id="10">J</div>
+                        </div>
+                        <div class="node" id="11">
+                            <div class="content" id="11">K</div>
+                        </div>
+                        <div class="node" id="12">
+                            <div class="content" id="12">L</div>
+                        </div>
+                        <div class="node" id="13">
+                            <div class="content" id="13">M</div>
+                        </div>
+                    </div>
+                    <div class="node" id="6">
+                        <div class="content" id="6">F</div>
+                    </div>
+                    <div class="node" id="7">
+                        <div class="content" id="7">G</div>
+                        <div class="node" id="14">
+                            <div class="content" id="14">N</div>
+                        </div>
+                        <div class="node" id="15">
+                            <div class="content" id="15">O</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="node" id="3">
+                    <div class="content" id="3">C</div>
+                    <div class="node" id="8">
+                        <div class="content" id="8">H</div>
+                        <div class="node" id="16">
+                            <div class="content" id="16">P</div>
+                        </div>
+                        <div class="node" id="17">
+                            <div class="content" id="17">Q</div>
+                        </div>
+                        <div class="node" id="18">
+                            <div class="content" id="18">R</div>
+                        </div>
+                    </div>
+                    <div class="node" id="9">
+                        <div class="content" id="9">I</div>
+                        <div class="node" id="19">
+                            <div class="content" id="19">S</div>
+                            <div class="node" id="21">
+                                <div class="content" id="21">U</div>
+                            </div>
+                        </div>
+                        <div class="node" id="20">
+                            <div class="content" id="20">T</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="node" id="4">
+                    <div class="content" id="4">D</div>
+                </div>
+            </div>
+        </div> -->
+        <div class="tree"></div>
+        <div style="display: flex; margin: 10px;">
+            <button id="delete">删除</button>
+        </div>
+        <div style="display: flex; margin: 10px;">
+            <input type="text" id="addContent">
+            <div>
+              <button type="button" id="add">添加</button>
+            </div>
+        </div>
+
+  
+        <script type="text/javascript">
+            class Queue {
+                constructor() {
+                    this._queue = [];
+                }
+
+                enqueue(data) {
+                    this._queue.push(data);
+                }
+
+                dequeue() {
+                    return this._queue.shift();
+                }
+
+                getQueue() {
+                    return this._queue.slice();
+                }
+            }
+
+            class Node {
+                constructor(data) {
+                    this.data = data;
+                    this.parent = null;
+                    this.children = [];
+
+                    const time = new Date();
+                    this.id = time.getTime() + data;
+                }
+            }
+
+            class Tree {
+                constructor(data) {
+                    this._root = new Node(data);
+
+                    this.traverseDF = this.traverseDF.bind(this);
+                    this.traverseBF = this.traverseBF.bind(this);
+                }
+
+                // 深度优先
+                traverseDF(callback) {
+                    function recurse(currentNode) {
+                        for (let i = 0; i < currentNode.children.length; i++) {
+                            recurse(currentNode.children[i]);
+                        }
+                        callback(currentNode);
+                    }
+
+                    return recurse(this._root);
+                }
+
+                // 广度优先
+                traverseBF(callback) {
+                    const queue = new Queue();
+
+                    function travese(node) {
+                        let currentNode = node;
+
+                        while(currentNode) {
+                            for (let i = 0; i < currentNode.children.length; i++) {
+                                queue.enqueue(currentNode.children[i]);
+                            }
+
+                            callback(currentNode);
+                            currentNode = queue.dequeue();
+                        }
+                    }
+ 
+                    return travese(this._root);
+                }
+
+                contains(callback, traversal) {
+                    traversal(callback);
+                }
+
+                add(data, parentData, traversal) {
+                    const newNode = new Node(data);
+                    
+                    let parent = null;
+
+                    this.contains((node) => {
+                        if (node.data === parentData) {
+                            parent = node;
+                        }
+                    }, traversal);
+
+                    if (parent) {
+                        parent.children.push(newNode);
+                        newNode.parent = parent;
+                    } else {
+                        throw new Error('Cannot add node to a non-existent parent.');
+                    }
+                }
+            }
+            
+            // build a tree
+            const tree = new Tree('1');
+            // layer 1
+            tree.add('2', '1', tree.traverseDF);
+            tree.add('3', '1', tree.traverseDF);
+            tree.add('4', '1', tree.traverseDF);
+            // layer 2
+            tree.add('5', '2', tree.traverseDF);
+            tree.add('6', '2', tree.traverseDF);
+            tree.add('7', '2', tree.traverseDF);
+            tree.add('8', '3', tree.traverseDF);
+            tree.add('9', '3', tree.traverseDF);
+            // layer 3
+            tree.add('10', '5', tree.traverseDF);
+            tree.add('11', '5', tree.traverseDF);
+            tree.add('12', '5', tree.traverseDF);
+            tree.add('13', '5', tree.traverseDF);
+            tree.add('14', '7', tree.traverseDF);
+            tree.add('15', '7', tree.traverseDF);
+            tree.add('16', '8', tree.traverseDF);
+            tree.add('17', '8', tree.traverseDF);
+            tree.add('18', '8', tree.traverseDF);
+            tree.add('19', '9', tree.traverseDF);
+            tree.add('20', '9', tree.traverseDF);
+            // layer 4
+            tree.add('21', '19', tree.traverseDF);
+
+            let changeDOM = null;
+
+            function render(tree) {
+                const treeDOM = [];
+                tree.traverseBF((currentNode) => {
+                    treeDOM.push(currentNode);
+                });
+                
+                function createNode(data, id) {
+                    const nodeDOM = document.createElement('div');
+                    nodeDOM.className = "node";
+                    nodeDOM.id = `${id}`;
+                    nodeDOM.innerHTML = `<div class="content" id="${id}">${data}</div>`;
+                    nodeDOM.addEventListener('click', (event) => {
+                        // 还原颜色
+                        const nodes = document.querySelectorAll(".node");
+                        for (let i = 0; i < nodes.length; i++) {
+                            nodes[i].style.backgroundColor = "white";
+                        }
+                        
+                        // 设定点击颜色
+                        const nodeID = event.target.id;
+                        const node =  document.querySelector(`[id='${nodeID}']`);
+                        node.style.backgroundColor = "red";
+                        changeDOM = node;
+                    });
+                    return nodeDOM;
+                }
+
+                const rootDOM = document.querySelector(".tree");
+                rootDOM.innerHTML = '';
+      
+                treeDOM.forEach((node) => {
+                    if (node.parent === null) {
+                        rootDOM.appendChild(createNode(node.data, node.id));
+                    } else {
+                        const parentDOM = document.querySelector(`[id='${node.parent.id}']`);
+                        parentDOM.appendChild(createNode(node.data, node.id));
+                    }
+                });
+            }
+
+            render(tree);
+
+            document.querySelector('#delete').addEventListener('click', () => {
+                if (changeDOM !== null) {
+                    nodeID = changeDOM.id;
+                    tree.traverseDF((currentNode) => {
+                        if (currentNode.id === nodeID) {
+                            const parentNode = currentNode.parent;
+
+                            // 找到currentNode在parent.children中的位置
+                            let currentNodeIndex;
+                            for (let i =0; i < parentNode.children.length; i++) {
+                                if (parentNode.children[i].data === currentNode.data) {
+                                    currentNodeIndex = i;
+                                    break;
+                                }
+                            }
+
+                            parentNode.children = parentNode.children.slice(0, currentNodeIndex).concat(parentNode.children.slice(currentNodeIndex + 1));
+                        }
+                    });
+
+                    render(tree);
+
+                    changeDOM = null;
+                }
+            });
+
+            document.querySelector('#add').addEventListener('click', () => {
+                if (changeDOM === null) {
+                    alert('select a node');
+                } else {
+                    const content = document.querySelector('#addContent').value;
+
+                    if (content === null || content === '' || content === undefined) {
+                        alert('input a value');
+                    } else {
+                        const parentData = changeDOM.firstChild.innerHTML;
+                        tree.add(content, parentData, tree.traverseDF);
+                    }
+
+                    render(tree);
+                }
+            });
+        </script>
+    </body>
+</html>
