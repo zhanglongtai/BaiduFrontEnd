@@ -36,7 +36,7 @@
                 <div id="title">名称</div>
                 <div id="inputBox">
                     <input type="text" id="inputValue" name="content" />
-                    <div id="inputText"></div>
+                    <div id="inputText">必填，长度为4~6个字符</div>
                 </div>
                 <button id="btn" type="submit">验证</button>
             </div>
@@ -70,13 +70,16 @@
                     document.querySelector('#inputText').style.color = 'red';
                     document.querySelector('#inputValue').style.borderColor = 'red';
                 } else {
-                    // event.preventDefault();
+                    event.preventDefault();
+                    document.querySelector('#inputText').innerText = "名称格式正确"
+                    document.querySelector('#inputText').style.color = 'green';
+                    document.querySelector('#inputValue').style.borderColor = 'green';
                 }
             }, false);
 
             document.querySelector('#inputValue').addEventListener('focus', (event) => {
                 document.querySelector('#inputText').innerText = "";
-                document.querySelector('#inputText').style.color = 'black';
+                document.querySelector('#inputText').style.color = 'grey';
                 // document.querySelector('#inputValue').value = "";
                 document.querySelector('#inputValue').style.borderColor = 'black';
             }, false);
