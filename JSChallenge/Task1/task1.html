@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>IFE JavaScript Task 01</title>
+        <style>
+            #item {
+                display: flex;
+                height: 100px;
+                width: 400px;
+            }
+            #title {
+                margin: 10px 10px 0 20px;
+            }
+            #inputBox {
+                margin: 0px 10px 0 10px;
+            }
+            #inputValue {
+                margin: 10px 0 0 0;
+            }
+            #inputText {
+                margin: 5px 0 0 0;
+                color: grey;
+                font-size: 10px;
+            }
+            #btn {
+                margin: 10px 20px 0 10px;
+                width: 50px;
+                height: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <form action="#" method="post">
+            <div id="item">
+                <div id="title">名称</div>
+                <div id="inputBox">
+                    <input type="text" id="inputValue" name="content" />
+                    <div id="inputText"></div>
+                </div>
+                <button id="btn" type="submit">验证</button>
+            </div>
+        </form>
+
+        <script type="text/javascript">
+            function valid(str) {
+                let num = 0;
+                for (let i of str) {
+                    if (i.codePointAt(0) < 0x00 || i.codePointAt(0) > 0xFF) {
+                        num += 2;
+                    } else {
+                        num += 1;
+                    }
+                }
+
+                console.log(num)
+
+                if (num < 4 || num >6) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+            document.querySelector('form').addEventListener('submit',(event) => {
+                const value = document.querySelector('#inputValue').value;
+                if (!valid(value)) {
+                    event.preventDefault();
+                    document.querySelector('#inputText').innerText = "内容长度必须为4~6个字符"
+                    document.querySelector('#inputText').style.color = 'red';
+                    document.querySelector('#inputValue').style.borderColor = 'red';
+                } else {
+                    event.preventDefault();
+                }
+            }, false);
+
+            document.querySelector('#inputValue').addEventListener('focus', (event) => {
+                document.querySelector('#inputText').innerText = "";
+                document.querySelector('#inputText').style.color = 'black';
+                // document.querySelector('#inputValue').value = "";
+                document.querySelector('#inputValue').style.borderColor = 'black';
+            }, false);
+        </script>
+    </body>
+</html>
